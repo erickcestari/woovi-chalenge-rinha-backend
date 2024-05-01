@@ -1,11 +1,12 @@
-import Koa from 'koa';
-import koaLogger from 'koa-logger';
-import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
-import mount from 'koa-mount';
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
+import Koa from 'koa';
+import bodyParser from 'koa-bodyparser';
 import { graphqlHTTP } from 'koa-graphql';
-import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull } from 'graphql';
+import koaLogger from 'koa-logger';
+import mount from 'koa-mount';
 import { clientGet } from './modules/client/clientGet';
+import { z } from 'zod';
 
 const app = new Koa();
 
@@ -13,25 +14,52 @@ app.use(bodyParser());
 app.use(koaLogger());
 app.use(cors({ maxAge: 86400, credentials: true }));
 
-// Define the Donation type
-const DonationType = new GraphQLObjectType({
-  name: 'Donation',
+// Define the Client type
+const ClientType = new GraphQLObjectType({
+  name: 'Client',
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLString) },
-    // Add other fields as needed
+    id: { type: new GraphQLNonNull(GraphQLInt) },
+    limit: { type: GraphQLInt },
+    balance: { type: GraphQLInt },
+    available: { type: GraphQLInt },
+    last_transactions: {
+      type: new GraphQLList(new GraphQLObjectType({
+        name: 'Transaction',
+        fields: {
+          id: { type: new GraphQLNonNull(GraphQLInt) },
+          value: { type: GraphQLInt },
+          type: { type: GraphQLString },
+          description: { type: GraphQLString },
+          performed_at: { type: GraphQLString },
+        }
+      }))
+    },
   },
+});
+
+const ArgsSchema = z.object({
+  id: z.number(),
 });
 
 // Define the Query type
 const QueryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
-    donation: {
-      type: DonationType,
+    client: {
+      type: ClientType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLString) },
+        id: { type: new GraphQLNonNull(GraphQLInt) },
       },
-      resolve: (root, args) => clientGet(args.id),
+      resolve: async (root, args) => {
+        console.log(args)
+
+        // Validate the args
+        const validatedArgs = ArgsSchema.parse(args);
+
+        const client = await clientGet(validatedArgs.id);
+        console.log(client)
+        return client;
+      },
     },
   },
 });
