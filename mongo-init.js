@@ -1,6 +1,6 @@
 db = connect("mongodb://localhost/rinhabackenddb");
 
-db.clientes.insertMany([
+db.client.insertMany([
   {
     id: 1,
     limite: 100000,

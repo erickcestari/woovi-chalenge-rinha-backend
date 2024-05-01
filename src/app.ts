@@ -5,7 +5,7 @@ import cors from '@koa/cors';
 import mount from 'koa-mount';
 import { graphqlHTTP } from 'koa-graphql';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull } from 'graphql';
-import { donationGet } from './modules/donation/donationGet';
+import { clientGet } from './modules/client/clientGet';
 
 const app = new Koa();
 
@@ -31,7 +31,7 @@ const QueryType = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
-      resolve: (root, args) => donationGet(args.id),
+      resolve: (root, args) => clientGet(args.id),
     },
   },
 });
