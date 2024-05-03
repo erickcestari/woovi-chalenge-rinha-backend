@@ -5,6 +5,7 @@ const Schema = new mongoose.Schema({
   type: String,
   description: String,
   performed_at: Date,
+  clientId: { type: mongoose.Schema.Types.Number, ref: 'Client' },
 });
 
 const TransactionModel = mongoose.model('Transaction', Schema);
