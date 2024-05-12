@@ -4,7 +4,7 @@ import ClientModel from './clientModel';
 export const clientGet = async (id: number) => {
   const client = await ClientModel.findOne({
     id: id,
-  }).lean();
+  }).populate('last_transactions').lean();
 
   if (!client) {
     throw new Error(`No client found with id: ${id}`);

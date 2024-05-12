@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 (async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect();
     const db = mongoose.connection;
 
     let clients = [
@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
       { id: 5, limit: 500000, balance: 0, available: 500000, last_transactions: [] },
     ];
 
-    db.collection('clients').insertMany(clients);
+    db.collection('Client').insertMany(clients);
   } catch (error) {
     console.error("Error connecting to the database", error);
   }
