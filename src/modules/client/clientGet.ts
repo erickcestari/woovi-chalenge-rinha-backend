@@ -1,7 +1,7 @@
+import TransactionModel from '../transaction/transactionModel';
 import ClientModel from './clientModel';
 
 export const clientGet = async (id: number) => {
-  console.log("aqui deu isso" + id)
   const client = await ClientModel.findOne({
     id: id,
   }).lean();
@@ -10,11 +10,13 @@ export const clientGet = async (id: number) => {
     throw new Error(`No client found with id: ${id}`);
   }
 
+  const transactions = await TransactionModel.find({ clientId: id }).lean();
+
   return {
     id: client.id,
     limit: client.limit,
     balance: client.balance,
     available: client.available,
-    last_transactions: client.last_transactions,
+    last_transactions: transactions,
   };
 }
