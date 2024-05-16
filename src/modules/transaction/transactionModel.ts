@@ -5,7 +5,7 @@ const Schema = new mongoose.Schema({
   value: Number,
   type: String,
   description: String,
-  performed_at: Date,
+  performedAt: Date,
   clientId: { type: mongoose.Schema.Types.Number, ref: 'Client' },
 });
 
@@ -14,7 +14,7 @@ export interface ITransaction {
   value: number;
   type: string;
   description?: string;
-  performed_at: Date;
+  performedAt: Date;
   clientId: number;
 }
 

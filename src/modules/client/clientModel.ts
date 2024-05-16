@@ -4,7 +4,7 @@ const Schema = new mongoose.Schema({
   id: Number,
   limit: Number,
   balance: Number,
-  last_transactions: [{ type: mongoose.Schema.Types.Number, ref: 'Transaction' }],
+  lastTransactions: [{ type: mongoose.Schema.Types.Number, ref: 'Transaction' }],
 });
 
 const ClientModel = mongoose.model('Client', Schema);

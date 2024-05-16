@@ -40,7 +40,7 @@ export const TransactionType = new GraphQLObjectType({
     value: { type: new GraphQLNonNull(GraphQLInt) },
     type: { type: new GraphQLNonNull(TransactionTypeScalar) },
     description: { type: GraphQLString },
-    performed_at: { type: new GraphQLNonNull(GraphQLString) },
+    performedAt: { type: new GraphQLNonNull(GraphQLString) },
     currentBalance: { type: new GraphQLNonNull(GraphQLInt) },
   },
 });

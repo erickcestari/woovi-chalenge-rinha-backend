@@ -18,7 +18,7 @@ export const transactionPost = async (args: ITransactionDTO) => {
     const currentLimit = client.limit || 0;
     const newBalance = args.type === 'c' ? currentBalance + args.value : currentBalance - args.value;
 
-    if (newBalance < currentLimit) {
+    if (newBalance < -currentLimit) {
       throw new Error('Transaction exceeds client limit');
     }
 
@@ -36,7 +36,7 @@ export const transactionPost = async (args: ITransactionDTO) => {
       value: args.value,
       type: args.type,
       description: args.description,
-      performed_at: new Date(),
+      performedAt: new Date(),
     }], { session });
 
     await session.commitTransaction();
@@ -46,7 +46,7 @@ export const transactionPost = async (args: ITransactionDTO) => {
       value: transaction[0].value,
       type: transaction[0].type,
       description: transaction[0].description,
-      performed_at: new Date(transaction[0].performed_at).toISOString(),
+      performedAt: new Date(transaction[0].performedAt).toISOString(),
       currentBalance: newBalance,
     };
   } catch (error) {

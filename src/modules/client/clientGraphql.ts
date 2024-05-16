@@ -1,30 +1,41 @@
 import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
 import { clientGet } from "./clientGet";
 
-export const ClientType = new GraphQLObjectType({
-  name: 'Client',
+const BalanceType = new GraphQLObjectType({
+  name: 'ClientBalance',
+  fields: {
+    limit: { type: GraphQLInt },
+    total: { type: GraphQLInt },
+    statementDate: { type: GraphQLString },
+  },
+});
+
+const TransactionType = new GraphQLObjectType({
+  name: 'ClientTransaction',
   fields: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
-    limit: { type: GraphQLInt },
-    balance: { type: GraphQLInt },
-    available: { type: GraphQLInt },
-    last_transactions: {
-      type: new GraphQLList(new GraphQLObjectType({
-        name: 'Transaction',
-        fields: {
-          id: { type: new GraphQLNonNull(GraphQLInt) },
-          value: { type: GraphQLInt },
-          type: { type: GraphQLString },
-          description: { type: GraphQLString },
-          performed_at: { type: GraphQLString },
-        }
-      }))
+    value: { type: GraphQLInt },
+    type: { type: GraphQLString },
+    description: { type: GraphQLString },
+    performedAt: {
+      type: GraphQLString,
+      resolve: (transaction) => {
+        return new Date(transaction.performedAt).toISOString();
+      },
     },
   },
 });
 
+export const ClientType = new GraphQLObjectType({
+  name: 'ClientDetails',
+  fields: {
+    balance: { type: BalanceType },
+    recentTransactions: { type: new GraphQLList(TransactionType) },
+  },
+});
+
 export const ClientQuery = new GraphQLObjectType({
-  name: 'ClientQuery',
+  name: 'ClientDataQuery',
   fields: {
     client: {
       type: ClientType,
@@ -33,6 +44,7 @@ export const ClientQuery = new GraphQLObjectType({
       },
       resolve: async (_, args) => {
         const client = await clientGet(args.id);
+        console.log(client);
         return client;
       },
     },
