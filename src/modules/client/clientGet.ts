@@ -16,7 +16,6 @@ export const clientGet = async (id: number) => {
     id: client.id,
     limit: client.limit,
     balance: client.balance,
-    available: client.available,
     last_transactions: transactions,
   };
 }

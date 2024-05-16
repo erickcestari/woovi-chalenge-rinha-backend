@@ -36,7 +36,7 @@ export const ClientQuery = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLInt) },
       },
-      resolve: async (root, args) => {
+      resolve: async (_, args) => {
         const validatedArgs = ArgsSchema.parse(args);
         const client = await clientGet(validatedArgs.id);
         return client;

@@ -6,7 +6,7 @@ const Schema = new mongoose.Schema({
   type: String,
   description: String,
   performed_at: Date,
-  clientId: { type: mongoose.Schema.Types.Number, ref: 'Client' }, // Add this line
+  clientId: { type: mongoose.Schema.Types.Number, ref: 'Client' },
 });
 
 export interface ITransaction {

@@ -1,7 +1,6 @@
 import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
-import { transactionPost } from "./transactionPost";
 import { z } from "zod";
-import { cli } from "webpack";
+import { transactionPost } from "./transactionPost";
 
 export const TransactionInput = new GraphQLInputObjectType({
   name: 'TransactionInput',
@@ -9,7 +8,6 @@ export const TransactionInput = new GraphQLInputObjectType({
     value: { type: new GraphQLNonNull(GraphQLInt) },
     type: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
-    performed_at: { type: new GraphQLNonNull(GraphQLString) },
     clientId: { type: new GraphQLNonNull(GraphQLInt) },
   },
 });
@@ -22,17 +20,17 @@ export const TransactionType = new GraphQLObjectType({
     type: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
     performed_at: { type: new GraphQLNonNull(GraphQLString) },
-    clientId: { type: new GraphQLNonNull(GraphQLInt) },
+    currentBalance: { type: new GraphQLNonNull(GraphQLInt) },
   },
 });
 
 const ArgsSchema = z.object({
   transaction: z.object({
-    id: z.number().optional(),
     value: z.number(),
-    type: z.string(),
+    type: z.string().refine(value => value === 'd' || value === 'c', {
+      message: "Type must be either 'd' or 'c'",
+    }),
     description: z.string().optional(),
-    performed_at: z.string().transform((value) => new Date(value)),
     clientId: z.number(),
   }),
 });
@@ -45,9 +43,10 @@ export const TransactionMutation = new GraphQLObjectType({
       args: {
         transaction: { type: new GraphQLNonNull(TransactionInput) },
       },
-      resolve: async (root, args) => {
+      resolve: async (_, args) => {
         const validatedArgs = ArgsSchema.parse(args);
         const transaction = await transactionPost(validatedArgs.transaction);
+        console.log(transaction);
 
         return transaction;
       },
