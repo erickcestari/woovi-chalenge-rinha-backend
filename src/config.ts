@@ -12,11 +12,5 @@ dotenvSafe.config({
 
 export const config = {
   PORT: process.env.PORT || 5666,
-  NODE_ENV: process.env.NODE_ENV,
-
-  OPENPIX_API: process.env.OPENPIX_API,
-  APP_ID: process.env.APP_ID,
   MONGO_URI: process.env.MONGO_URI,
-  HMAC_SECRET_KEY: process.env.HMAC_SECRET_KEY,
-  WEBHOOK_PUBLIC_KEY: process.env.WEBHOOK_PUBLIC_KEY,
 }
