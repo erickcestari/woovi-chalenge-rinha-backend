@@ -1,12 +1,33 @@
-import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
-import { z } from "zod";
+import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLSchema, GraphQLString, Kind } from "graphql";
 import { transactionPost } from "./transactionPost";
 
-export const TransactionInput = new GraphQLInputObjectType({
+const TransactionTypeScalar = new GraphQLScalarType({
+  name: 'TransactionType',
+  description: "Type must be either 'd' or 'c'",
+  serialize(value) {
+    return value;
+  },
+  parseValue(value) {
+    if (value === 'd' || value === 'c') {
+      return value;
+    }
+    throw new Error("TransactionType must be either 'd' or 'c'");
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.STRING) {
+      if (ast.value === 'd' || ast.value === 'c') {
+        return ast.value;
+      }
+    }
+    throw new Error("TransactionType must be either 'd' or 'c'");
+  },
+});
+
+export const TransactionInputType = new GraphQLInputObjectType({
   name: 'TransactionInput',
   fields: {
     value: { type: new GraphQLNonNull(GraphQLInt) },
-    type: { type: new GraphQLNonNull(GraphQLString) },
+    type: { type: new GraphQLNonNull(TransactionTypeScalar) },
     description: { type: GraphQLString },
     clientId: { type: new GraphQLNonNull(GraphQLInt) },
   },
@@ -17,22 +38,11 @@ export const TransactionType = new GraphQLObjectType({
   fields: {
     id: { type: new GraphQLNonNull(GraphQLInt) },
     value: { type: new GraphQLNonNull(GraphQLInt) },
-    type: { type: new GraphQLNonNull(GraphQLString) },
+    type: { type: new GraphQLNonNull(TransactionTypeScalar) },
     description: { type: GraphQLString },
     performed_at: { type: new GraphQLNonNull(GraphQLString) },
     currentBalance: { type: new GraphQLNonNull(GraphQLInt) },
   },
-});
-
-const ArgsSchema = z.object({
-  transaction: z.object({
-    value: z.number(),
-    type: z.string().refine(value => value === 'd' || value === 'c', {
-      message: "Type must be either 'd' or 'c'",
-    }),
-    description: z.string().optional(),
-    clientId: z.number(),
-  }),
 });
 
 export const TransactionMutation = new GraphQLObjectType({
@@ -41,12 +51,10 @@ export const TransactionMutation = new GraphQLObjectType({
     createTransaction: {
       type: TransactionType,
       args: {
-        transaction: { type: new GraphQLNonNull(TransactionInput) },
+        transaction: { type: new GraphQLNonNull(TransactionInputType) },
       },
       resolve: async (_, args) => {
-        const validatedArgs = ArgsSchema.parse(args);
-        const transaction = await transactionPost(validatedArgs.transaction);
-        console.log(transaction);
+        const transaction = await transactionPost(args.transaction);
 
         return transaction;
       },

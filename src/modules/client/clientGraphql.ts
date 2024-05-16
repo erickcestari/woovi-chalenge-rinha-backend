@@ -1,5 +1,4 @@
-import { GraphQLObjectType, GraphQLNonNull, GraphQLInt, GraphQLList, GraphQLString, GraphQLSchema } from "graphql";
-import { z } from "zod";
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
 import { clientGet } from "./clientGet";
 
 export const ClientType = new GraphQLObjectType({
@@ -24,10 +23,6 @@ export const ClientType = new GraphQLObjectType({
   },
 });
 
-const ArgsSchema = z.object({
-  id: z.number(),
-});
-
 export const ClientQuery = new GraphQLObjectType({
   name: 'ClientQuery',
   fields: {
@@ -37,8 +32,7 @@ export const ClientQuery = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLInt) },
       },
       resolve: async (_, args) => {
-        const validatedArgs = ArgsSchema.parse(args);
-        const client = await clientGet(validatedArgs.id);
+        const client = await clientGet(args.id);
         return client;
       },
     },
