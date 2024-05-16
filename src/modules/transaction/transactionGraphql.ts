@@ -33,15 +33,11 @@ export const TransactionInputType = new GraphQLInputObjectType({
   },
 });
 
-export const TransactionType = new GraphQLObjectType({
-  name: 'Transaction',
+export const ClientBalanceType = new GraphQLObjectType({
+  name: 'ClientBalance',
   fields: {
-    id: { type: new GraphQLNonNull(GraphQLInt) },
-    value: { type: new GraphQLNonNull(GraphQLInt) },
-    type: { type: new GraphQLNonNull(TransactionTypeScalar) },
-    description: { type: GraphQLString },
-    performedAt: { type: new GraphQLNonNull(GraphQLString) },
-    currentBalance: { type: new GraphQLNonNull(GraphQLInt) },
+    balance: { type: GraphQLInt },
+    limit: { type: GraphQLInt },
   },
 });
 
@@ -49,7 +45,7 @@ export const TransactionMutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     createTransaction: {
-      type: TransactionType,
+      type: ClientBalanceType,
       args: {
         transaction: { type: new GraphQLNonNull(TransactionInputType) },
       },
@@ -63,6 +59,6 @@ export const TransactionMutation = new GraphQLObjectType({
 });
 
 export const transactionSchema = new GraphQLSchema({
-  query: TransactionType,
+  query: ClientBalanceType,
   mutation: TransactionMutation,
 });

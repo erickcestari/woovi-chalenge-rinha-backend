@@ -30,7 +30,7 @@ export const transactionPost = async (args: ITransactionDTO) => {
 
     const transactionId = await TransactionModel.countDocuments().session(session);
 
-    const transaction = await TransactionModel.create([{
+    await TransactionModel.create([{
       id: transactionId,
       clientId: args.clientId,
       value: args.value,
@@ -42,12 +42,8 @@ export const transactionPost = async (args: ITransactionDTO) => {
     await session.commitTransaction();
 
     return {
-      id: transaction[0].id,
-      value: transaction[0].value,
-      type: transaction[0].type,
-      description: transaction[0].description,
-      performedAt: new Date(transaction[0].performedAt).toISOString(),
-      currentBalance: newBalance,
+      limit: client.limit,
+      balance: newBalance,
     };
   } catch (error) {
     await session.abortTransaction();
