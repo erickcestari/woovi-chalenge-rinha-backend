@@ -2,8 +2,19 @@ import { startSession } from "mongoose";
 import ClientModel from "../client/clientModel";
 import { ITransactionDTO } from "./transactionDTO";
 import TransactionModel from "./transactionModel";
+import { Job, Queue, Worker } from "bullmq";
 
-export const transactionPost = async (args: ITransactionDTO) => {
+const connectionOptions = {
+  connection: {
+    host: "localhost",
+    port: parseInt(process.env.REDIS_PORT ?? '6379'),
+  },
+};
+
+const transactionQueue = new Queue<ITransactionDTO>("transactionQueue", connectionOptions,);
+
+new Worker("transactionQueue", async (job: Job<ITransactionDTO>) => {
+  const args = job.data;
   const session = await startSession();
   session.startTransaction();
 
@@ -55,4 +66,9 @@ export const transactionPost = async (args: ITransactionDTO) => {
   } finally {
     session.endSession();
   }
+}, connectionOptions);
+
+
+export const transactionPost = (args: ITransactionDTO) => {
+  transactionQueue.add("Transaction " + args.clientId, args);
 }
