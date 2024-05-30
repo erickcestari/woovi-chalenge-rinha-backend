@@ -3,18 +3,20 @@ import { ITransactionDTO } from "./transactionDTO";
 import TransactionModel from "./transactionModel";
 
 export const transactionPost = async (args: ITransactionDTO) => {
-    const currentBalance = args.type === 'c' ? args.value : -args.value;
+    const value = args.type === 'c' ? args.value : -args.value;
 
     const client = await ClientModel.findOneAndUpdate(
-      { id: args.clientId },
-      { $inc: { balance: currentBalance } }
+      { id: args.clientId, $expr: { $gte: [{ $sum: ['$balance', value] }, { $multiply: [-1, '$limit'] }] },},
+      { $inc: { balance: value } },
+      { new: true }
     ).lean();
 
-    if (!client || !client.id || !client.balance || !client.limit) {
-      throw new Error(`No client found with id: ${args.clientId}`);
-    }
-
-    if (client.balance < -client.limit) {
+    if (!client) {
+      const clientExists = await ClientModel.findOne({ id: args.clientId }).lean();
+      if (!clientExists){
+        throw new Error('Client not found');
+      }
+      
       throw new Error('Transaction exceeds client limit');
     }
 

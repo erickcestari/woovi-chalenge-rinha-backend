@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const WebpackNodeExternals = require('webpack-node-externals');
-const ReloadServerPlugin = require('./webpack/ReloadServerPlugin');
 
 const cwd = process.cwd();
 const filename = 'api.js';
@@ -47,9 +46,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new ReloadServerPlugin({
-      script: path.resolve('build', filename),
-    }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
