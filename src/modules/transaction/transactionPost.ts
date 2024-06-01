@@ -1,6 +1,5 @@
 import ClientModel from "../client/clientModel";
-import { ITransactionDTO } from "./transactionDTO";
-import TransactionModel from "./transactionModel";
+import TransactionModel, {ITransactionDTO} from "./transactionModel";
 
 export const transactionPost = async (args: ITransactionDTO) => {
     const value = args.type === 'c' ? args.value : -args.value;

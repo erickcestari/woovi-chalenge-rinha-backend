@@ -9,7 +9,7 @@ const Schema = new mongoose.Schema({
   clientId: { type: mongoose.Schema.Types.Number, ref: 'Client' },
 });
 
-export interface ITransaction {
+export type ITransaction = {
   id: number;
   value: number;
   type: string;
@@ -17,6 +17,8 @@ export interface ITransaction {
   performedAt: Date;
   clientId: number;
 }
+
+export type ITransactionDTO = Omit<ITransaction, "id" | "performedAt">
 
 const TransactionModel = mongoose.model<ITransaction>('Transaction', Schema);
 
