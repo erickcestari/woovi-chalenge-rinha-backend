@@ -1,5 +1,5 @@
-import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
-import { clientGet } from "./clientGet";
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import { clientGet } from "../modules/client/clientGet";
 
 const BalanceType = new GraphQLObjectType({
   name: 'ClientBalance',
@@ -34,8 +34,8 @@ export const ClientType = new GraphQLObjectType({
   },
 });
 
-export const ClientQuery = new GraphQLObjectType({
-  name: 'ClientDataQuery',
+export const QueryType = new GraphQLObjectType({
+  name: 'Query',
   fields: {
     client: {
       type: ClientType,
@@ -44,13 +44,9 @@ export const ClientQuery = new GraphQLObjectType({
       },
       resolve: async (_, args) => {
         const client = await clientGet(args.id);
-        console.log(client);
+
         return client;
       },
     },
   },
-});
-
-export const clientSchema = new GraphQLSchema({
-  query: ClientQuery,
 });

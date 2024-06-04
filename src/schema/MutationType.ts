@@ -1,5 +1,5 @@
-import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLSchema, GraphQLString, Kind } from "graphql";
-import { transactionPost } from "./transactionPost";
+import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLString, Kind } from "graphql";
+import { transactionPost } from "../modules/transaction/transactionPost";
 
 const TransactionTypeScalar = new GraphQLScalarType({
   name: 'TransactionType',
@@ -23,7 +23,7 @@ const TransactionTypeScalar = new GraphQLScalarType({
   },
 });
 
-export const TransactionInputType = new GraphQLInputObjectType({
+const TransactionInputType = new GraphQLInputObjectType({
   name: 'TransactionInput',
   fields: {
     value: { type: new GraphQLNonNull(GraphQLInt) },
@@ -33,32 +33,26 @@ export const TransactionInputType = new GraphQLInputObjectType({
   },
 });
 
-export const ClientBalanceType = new GraphQLObjectType({
-  name: 'ClientBalance',
+const BalanceType = new GraphQLObjectType({
+  name: 'ClientBalanceTransaction',
   fields: {
     balance: { type: GraphQLInt },
     limit: { type: GraphQLInt },
   },
 });
 
-export const TransactionMutation = new GraphQLObjectType({
+export const  MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     createTransaction: {
-      type: ClientBalanceType,
+      type: BalanceType,
       args: {
         transaction: { type: new GraphQLNonNull(TransactionInputType) },
       },
       resolve: async (_, args) => {
         const transaction = await transactionPost(args.transaction);
-
         return transaction;
       },
     },
   },
-});
-
-export const transactionSchema = new GraphQLSchema({
-  query: ClientBalanceType,
-  mutation: TransactionMutation,
 });
