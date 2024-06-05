@@ -1,7 +1,7 @@
 import ClientModel from "../client/clientModel";
-import TransactionModel, {ITransactionDTO} from "./transactionModel";
+import TransactionModel, {TransactionDTO} from "./transactionModel";
 
-export const transactionPost = async (args: ITransactionDTO) => {
+export const transactionPost = async (args: TransactionDTO) => {
     const value = args.type === 'c' ? args.value : -args.value;
 
     const client = await ClientModel.findOneAndUpdate(
