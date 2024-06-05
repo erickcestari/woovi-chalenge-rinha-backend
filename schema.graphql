@@ -1,0 +1,48 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  client(id: Int!): ClientDetails
+}
+
+type Mutation {
+  createTransaction(transaction: TransactionInput!): ClientBalanceTransaction
+}
+
+input TransactionInput {
+  value: Int!
+  type: TransactionType!
+  description: String
+  clientId: Int!
+}
+
+enum TransactionType {
+  d
+  c
+}
+
+type ClientDetails {
+  balance: ClientBalance
+  recentTransactions: [ClientTransaction]
+}
+
+type ClientBalance {
+  limit: Int
+  total: Int
+  statementDate: String
+}
+
+type ClientBalanceTransaction {
+  balance: Int
+  limit: Int
+}
+
+type ClientTransaction {
+  id: Int!
+  value: Int
+  type: String
+  description: String
+  performedAt: String
+}
